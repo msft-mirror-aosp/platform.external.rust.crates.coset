@@ -1,7 +1,5 @@
 name: "coset"
-description:
-    "Set of types for supporting CBOR Object Signing and Encryption (COSE)."
-
+description: "Set of types for supporting COSE"
 third_party {
   url {
     type: HOMEPAGE
@@ -9,10 +7,13 @@ third_party {
   }
   url {
     type: ARCHIVE
-    value: "https://static.crates.io/crates/coset/coset-0.3.0.crate"
+    value: "https://static.crates.io/crates/coset/coset-0.3.1.crate"
   }
-  version: "0.3.0"
-  last_upgrade_date { year: 2022 month: 1 day: 26 }
+  version: "0.3.1"
   license_type: NOTICE
+  last_upgrade_date {
+    year: 2022
+    month: 3
+    day: 1
+  }
 }
-
