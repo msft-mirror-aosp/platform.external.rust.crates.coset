@@ -18,6 +18,7 @@
 
 use crate::{
     cbor::value::{Integer, Value},
+    common::AsCborValue,
     CoseError, Result,
 };
 use alloc::{boxed::Box, vec::Vec};
@@ -132,14 +133,6 @@ impl ValueTryAs for Value {
     }
 }
 
-/// Trait for types that can be converted to/from a [`Value`].
-pub trait AsCborValue: Sized {
-    /// Convert a [`Value`] into an instance of the type.
-    fn from_cbor_value(value: Value) -> Result<Self>;
-    /// Convert the object into a [`Value`], consuming it along the way.
-    fn to_cbor_value(self) -> Result<Value>;
-}
-
 /// Convert each item of an iterator to CBOR, and wrap the lot in
 /// a [`Value::Array`]
 pub fn to_cbor_array<C>(c: C) -> Result<Value>
@@ -156,21 +149,35 @@ where
 
 /// Check for an expected error.
 #[cfg(test)]
-pub fn expect_err<T: core::fmt::Debug, E: core::fmt::Debug>(result: Result<T, E>, err_msg: &str) {
+pub fn expect_err<T: core::fmt::Debug, E: core::fmt::Debug + core::fmt::Display>(
+    result: Result<T, E>,
+    err_msg: &str,
+) {
     use alloc::format;
-    assert!(
-        result.is_err(),
-        "expected error containing '{}', got success {:?}",
-        err_msg,
-        result
-    );
-    let err = result.err();
-    assert!(
-        format!("{:?}", err).contains(err_msg),
-        "unexpected error {:?}, doesn't contain '{}'",
-        err,
-        err_msg
-    );
+    match result {
+        Ok(_) => {
+            assert!(
+                result.is_err(),
+                "expected error containing '{}', got success {:?}",
+                err_msg,
+                result
+            );
+        }
+        Err(err) => {
+            assert!(
+                format!("{:?}", err).contains(err_msg),
+                "unexpected error {:?}, doesn't contain '{}' (Debug impl)",
+                err,
+                err_msg
+            );
+            assert!(
+                format!("{}", err).contains(err_msg),
+                "unexpected error {:?}, doesn't contain '{}' (Display impl)",
+                err,
+                err_msg
+            );
+        }
+    }
 }
 
 // Macros to reduce boilerplate when creating `CoseSomethingBuilder` structures.
