@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.3.1 - 2022-02-23
+
+- Implement `Display` for `CoseError`.
+- Fix `Cargo.toml` to indicate reliance on `alloc` feature of `ciborium-io`.
+- Make `AsCborValue` trait public.
+
 ## 0.3.0 - 2022-01-19
 
 - Change to use `ciborium` as CBOR library. Breaking change with many knock-on effects:
