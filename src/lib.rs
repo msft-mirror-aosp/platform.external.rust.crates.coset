@@ -101,6 +101,7 @@
 extern crate alloc;
 
 /// Use std to allow building as a dylib.
+#[cfg(android_dylib)]
 extern crate std;
 
 /// Re-export of the `ciborium` crate used for underlying CBOR encoding.
