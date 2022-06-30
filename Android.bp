@@ -23,12 +23,16 @@ rust_library {
     host_supported: true,
     crate_name: "coset",
     cargo_env_compat: true,
-    cargo_pkg_version: "0.3.1",
+    cargo_pkg_version: "0.3.2",
     srcs: ["src/lib.rs"],
     edition: "2018",
     rustlibs: [
         "libciborium",
         "libciborium_io",
+    ],
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
     ],
     vendor_available: true,
 }
