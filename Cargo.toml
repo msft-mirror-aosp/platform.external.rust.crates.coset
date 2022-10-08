@@ -12,12 +12,13 @@
 [package]
 edition = "2018"
 name = "coset"
-version = "0.3.2"
+version = "0.3.3"
 authors = [
     "David Drysdale <drysdale@google.com>",
     "Paul Crowley <paulcrowley@google.com>",
 ]
 description = "Set of types for supporting COSE"
+readme = "README.md"
 keywords = [
     "cryptography",
     "cose",
