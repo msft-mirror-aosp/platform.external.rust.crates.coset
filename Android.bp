@@ -18,12 +18,32 @@ license {
     ],
 }
 
+rust_test {
+    name: "coset_test_src_lib",
+    host_supported: true,
+    crate_name: "coset",
+    cargo_env_compat: true,
+    cargo_pkg_version: "0.3.3",
+    srcs: ["src/lib.rs"],
+    test_suites: ["general-tests"],
+    auto_gen_config: true,
+    test_options: {
+        unit_test: true,
+    },
+    edition: "2018",
+    rustlibs: [
+        "libciborium",
+        "libciborium_io",
+        "libhex",
+    ],
+}
+
 rust_library {
     name: "libcoset",
     host_supported: true,
     crate_name: "coset",
     cargo_env_compat: true,
-    cargo_pkg_version: "0.3.2",
+    cargo_pkg_version: "0.3.3",
     srcs: ["src/lib.rs"],
     edition: "2018",
     rustlibs: [
