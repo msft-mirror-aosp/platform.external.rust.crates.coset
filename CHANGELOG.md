@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.3.3 - 2022-09-30
+
+- Add `CoseKeyBuilder` methods `kty`, `key_type` and `new_okp_key`.
+
+## 0.3.2 - 2022-04-02
+
+- Add basic [CWT](https://datatracker.ietf.org/doc/html/rfc8392) support in `cwt` module, via the `ClaimsSet` type.
+
 ## 0.3.1 - 2022-02-23
 
 - Implement `Display` for `CoseError`.
