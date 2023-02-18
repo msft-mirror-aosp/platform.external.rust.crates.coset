@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "coset"
-version = "0.3.3"
+version = "0.3.4"
 authors = [
     "David Drysdale <drysdale@google.com>",
     "Paul Crowley <paulcrowley@google.com>",
@@ -37,3 +37,7 @@ features = ["alloc"]
 
 [dev-dependencies.hex]
 version = "^0.4.2"
+
+[features]
+default = []
+std = []
