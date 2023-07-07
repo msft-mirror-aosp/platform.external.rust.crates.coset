@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Example program demonstrating signature creation.
-use coset::{iana, CborSerializable, CoseError};
+//! Example program demonstrating signed CWT processing.
+use coset::{cbor::value::Value, cwt, iana, CborSerializable, CoseError};
 
 #[derive(Copy, Clone)]
 struct FakeSigner {}
@@ -40,54 +40,57 @@ fn main() -> Result<(), CoseError> {
     let signer = FakeSigner {};
     let verifier = signer;
 
-    // Inputs.
-    let pt = b"This is the content";
-    let aad = b"this is additional data";
+    // Build a CWT ClaimsSet (cf. RFC 8392 A.3).
+    let claims = cwt::ClaimsSetBuilder::new()
+        .issuer("coap://as.example.com".to_string())
+        .subject("erikw".to_string())
+        .audience("coap://light.example.com".to_string())
+        .expiration_time(cwt::Timestamp::WholeSeconds(1444064944))
+        .not_before(cwt::Timestamp::WholeSeconds(1443944944))
+        .issued_at(cwt::Timestamp::WholeSeconds(1443944944))
+        .cwt_id(vec![0x0b, 0x71])
+        // Add additional standard claim.
+        .claim(
+            iana::CwtClaimName::Scope,
+            Value::Text("email phone".to_string()),
+        )
+        // Add additional private-use claim.
+        .private_claim(-70_000, Value::Integer(42.into()))
+        .build();
+    let aad = b"";
 
     // Build a `CoseSign1` object.
     let protected = coset::HeaderBuilder::new()
         .algorithm(iana::Algorithm::ES256)
-        .key_id(b"11".to_vec())
+        .build();
+    let unprotected = coset::HeaderBuilder::new()
+        .key_id(b"AsymmetricECDSA256".to_vec())
         .build();
     let sign1 = coset::CoseSign1Builder::new()
         .protected(protected)
-        .payload(pt.to_vec())
+        .unprotected(unprotected)
+        .payload(claims.clone().to_vec()?)
         .create_signature(aad, |pt| signer.sign(pt))
         .build();
 
     // Serialize to bytes.
     let sign1_data = sign1.to_vec()?;
-    println!(
-        "'{}' + '{}' => {}",
-        String::from_utf8_lossy(pt),
-        String::from_utf8_lossy(aad),
-        hex::encode(&sign1_data)
-    );
 
     // At the receiving end, deserialize the bytes back to a `CoseSign1` object.
-    let mut sign1 = coset::CoseSign1::from_slice(&sign1_data)?;
+    let sign1 = coset::CoseSign1::from_slice(&sign1_data)?;
 
-    // Check the signature, which needs to have the same `aad` provided.
+    // Real code would:
+    // - Use the key ID to identify the relevant local key.
+    // - Check that the key is of the same type as `sign1.protected.algorithm`.
+
+    // Check the signature.
     let result = sign1.verify_signature(aad, |sig, data| verifier.verify(sig, data));
     println!("Signature verified: {:?}.", result);
     assert!(result.is_ok());
 
-    // Changing an unprotected header leaves the signature valid.
-    sign1.unprotected.content_type = Some(coset::ContentType::Text("text/plain".to_owned()));
-    assert!(sign1
-        .verify_signature(aad, |sig, data| verifier.verify(sig, data))
-        .is_ok());
+    // Now it's safe to parse the payload.
+    let recovered_claims = cwt::ClaimsSet::from_slice(&sign1.payload.unwrap())?;
 
-    // Providing a different `aad` means the signature won't validate.
-    assert!(sign1
-        .verify_signature(b"not aad", |sig, data| verifier.verify(sig, data))
-        .is_err());
-
-    // Changing a protected header invalidates the signature.
-    sign1.protected.header.content_type = Some(coset::ContentType::Text("text/plain".to_owned()));
-    sign1.protected.original_data = None;
-    assert!(sign1
-        .verify_signature(aad, |sig, data| verifier.verify(sig, data))
-        .is_err());
+    assert_eq!(recovered_claims, claims);
     Ok(())
 }
