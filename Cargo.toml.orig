@@ -1,6 +1,6 @@
 [package]
 name = "coset"
-version = "0.3.4"
+version = "0.3.5"
 authors = ["David Drysdale <drysdale@google.com>", "Paul Crowley <paulcrowley@google.com>"]
 edition = "2018"
 license = "Apache-2.0"
@@ -15,7 +15,7 @@ default = []
 std = []
 
 [dependencies]
-ciborium = { version = "^0.2.0", default-features = false }
+ciborium = { version = "^0.2.1", default-features = false }
 ciborium-io = { version = "^0.2.0", features = ["alloc"] }
 
 [dev-dependencies]

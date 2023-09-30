@@ -1,6 +1,6 @@
 # This project was upgraded with external_updater.
 # Usage: tools/external_updater/updater.sh update rust/crates/coset
-# For more info, check https://cs.android.com/android/platform/superproject/+/master:tools/external_updater/README.md
+# For more info, check https://cs.android.com/android/platform/superproject/+/main:tools/external_updater/README.md
 
 name: "coset"
 description: "Set of types for supporting COSE"
@@ -11,13 +11,13 @@ third_party {
   }
   url {
     type: ARCHIVE
-    value: "https://static.crates.io/crates/coset/coset-0.3.4.crate"
+    value: "https://static.crates.io/crates/coset/coset-0.3.5.crate"
   }
-  version: "0.3.4"
+  version: "0.3.5"
   license_type: NOTICE
   last_upgrade_date {
     year: 2023
-    month: 2
-    day: 15
+    month: 9
+    day: 29
   }
 }
