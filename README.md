@@ -1,7 +1,7 @@
 # COSET
 
 [![Docs](https://img.shields.io/badge/docs-rust-brightgreen?style=for-the-badge)](https://google.github.io/coset)
-[![CI Status](https://img.shields.io/github/workflow/status/google/coset/CI?color=blue&style=for-the-badge)](https://github.com/google/coset/actions?query=workflow%3ACI)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/google/coset/ci.yml?branch=main&color=blue&style=for-the-badge)](https://github.com/google/coset/actions?query=workflow%3ACI)
 [![codecov](https://img.shields.io/codecov/c/github/google/coset?style=for-the-badge)](https://codecov.io/gh/google/coset)
 
 This crate holds a set of Rust types for working with CBOR Object Signing and Encryption (COSE) objects, as defined in
@@ -13,9 +13,13 @@ example](examples/signature.rs) for documentation on how to use the code.
 
 **This repo is under construction** and so details of the API and the code may change without warning.
 
+## Features
+
+The `std` feature of the crate enables an implementation of `std::error::Error` for `CoseError`.
+
 ## `no_std` Support
 
-This crate supports `no_std`, but uses the `alloc` crate.
+This crate supports `no_std` (when the `std` feature is not set, which is the default), but uses the `alloc` crate.
 
 ## Minimum Supported Rust Version
 

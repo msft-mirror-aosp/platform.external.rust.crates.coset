@@ -71,7 +71,7 @@ fn test_cose_recipient_decode() {
 
         let mut got = CoseRecipient::from_slice(&got).unwrap();
         got.protected.original_data = None;
-        for mut recip in &mut got.recipients {
+        for recip in &mut got.recipients {
             recip.protected.original_data = None;
         }
         assert_eq!(*recipient, got);
@@ -80,7 +80,7 @@ fn test_cose_recipient_decode() {
 
 #[test]
 fn test_cose_recipient_decode_fail() {
-    let tests = vec![
+    let tests = [
         (
             concat!(
                 "a2",   // 2-map (should be tuple)
@@ -184,7 +184,7 @@ fn test_cose_encrypt_decode() {
 
 #[test]
 fn test_cose_encrypt_decode_fail() {
-    let tests = vec![
+    let tests = [
         (
             concat!(
                 "a2",   // 2-map (should be tuple)
@@ -473,10 +473,10 @@ fn test_rfc8152_cose_encrypt_decode() {
 
         let mut got = CoseEncrypt::from_tagged_slice(&got).unwrap();
         got.protected.original_data = None;
-        for mut recip in &mut got.recipients {
+        for recip in &mut got.recipients {
             recip.protected.original_data = None;
         }
-        for mut sig in &mut got.unprotected.counter_signatures {
+        for sig in &mut got.unprotected.counter_signatures {
             sig.protected.original_data = None;
         }
         assert_eq!(*encrypt, got);
@@ -518,7 +518,7 @@ fn test_cose_encrypt0_decode() {
 
 #[test]
 fn test_cose_encrypt0_decode_fail() {
-    let tests = vec![
+    let tests = [
         (
             concat!(
                 "a2",   // 2-map (should be tuple)
