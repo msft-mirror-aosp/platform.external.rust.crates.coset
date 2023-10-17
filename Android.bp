@@ -18,14 +18,36 @@ license {
     ],
 }
 
+rust_test {
+    name: "coset_test_src_lib",
+    host_supported: true,
+    crate_name: "coset",
+    cargo_env_compat: true,
+    cargo_pkg_version: "0.3.5",
+    srcs: ["src/lib.rs"],
+    test_suites: ["general-tests"],
+    auto_gen_config: true,
+    test_options: {
+        unit_test: true,
+    },
+    edition: "2018",
+    features: ["default"],
+    rustlibs: [
+        "libciborium",
+        "libciborium_io",
+        "libhex",
+    ],
+}
+
 rust_library {
     name: "libcoset",
     host_supported: true,
     crate_name: "coset",
     cargo_env_compat: true,
-    cargo_pkg_version: "0.3.3",
+    cargo_pkg_version: "0.3.5",
     srcs: ["src/lib.rs"],
     edition: "2018",
+    features: ["default"],
     rustlibs: [
         "libciborium",
         "libciborium_io",
@@ -34,5 +56,32 @@ rust_library {
         "//apex_available:platform",
         "//apex_available:anyapex",
     ],
+    product_available: true,
+    vendor_available: true,
+}
+
+rust_library_rlib {
+    name: "libcoset_nostd",
+    crate_name: "coset",
+    cargo_env_compat: true,
+    cargo_pkg_version: "0.3.5",
+    srcs: ["src/lib.rs"],
+    edition: "2018",
+    rustlibs: [
+        "libciborium_nostd",
+        "libciborium_io_nostd",
+    ],
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    prefer_rlib: true,
+    no_stdlibs: true,
+    stdlibs: [
+        "liballoc.rust_sysroot",
+        "libcompiler_builtins.rust_sysroot",
+        "libcore.rust_sysroot",
+    ],
+    product_available: true,
     vendor_available: true,
 }
