@@ -6,6 +6,7 @@
   "tests": true,
   "variants": [
     {
+      "features": "default,std"
     },
     {
       "alloc": true,
