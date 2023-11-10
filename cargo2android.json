@@ -10,7 +10,10 @@
     },
     {
       "alloc": true,
-      "dependency_suffix": "_nostd",
+      "dep-suffixes": {
+        "ciborium": "_nostd",
+        "ciborium_io": "_nostd"
+      },
       "features": "",
       "force-rlib": true,
       "no-host": true,
