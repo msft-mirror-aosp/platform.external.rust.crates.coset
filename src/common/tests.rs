@@ -56,6 +56,7 @@ fn test_label_sort() {
     let pairs = vec![
         (Label::Int(0x1234), Label::Text("a".to_owned())),
         (Label::Int(0x1234), Label::Text("ab".to_owned())),
+        (Label::Int(0x12345678), Label::Text("ab".to_owned())),
         (Label::Int(0), Label::Text("ab".to_owned())),
         (Label::Int(-1), Label::Text("ab".to_owned())),
         (Label::Int(0), Label::Int(10)),
@@ -100,8 +101,73 @@ fn test_label_sort() {
 }
 
 #[test]
+fn test_label_canonical_sort() {
+    // Pairs of `Label`s with the "smaller" first, as per RFC7049 "canonical" ordering.
+    let pairs = vec![
+        (Label::Text("a".to_owned()), Label::Int(0x1234)), // different than above
+        (Label::Int(0x1234), Label::Text("ab".to_owned())),
+        (Label::Text("ab".to_owned()), Label::Int(0x12345678)), // different than above
+        (Label::Int(0), Label::Text("ab".to_owned())),
+        (Label::Int(-1), Label::Text("ab".to_owned())),
+        (Label::Int(0), Label::Int(10)),
+        (Label::Int(0), Label::Int(-10)),
+        (Label::Int(10), Label::Int(-1)),
+        (Label::Int(-1), Label::Int(-2)),
+        (Label::Int(0x12), Label::Int(0x1234)),
+        (Label::Int(0x99), Label::Int(0x1234)),
+        (Label::Int(0x1234), Label::Int(0x1235)),
+        (Label::Text("a".to_owned()), Label::Text("ab".to_owned())),
+        (Label::Text("aa".to_owned()), Label::Text("ab".to_owned())),
+    ];
+    for (left, right) in pairs.into_iter() {
+        let value_cmp = left.cmp_canonical(&right);
+
+        let left_data = left.clone().to_vec().unwrap();
+        let right_data = right.clone().to_vec().unwrap();
+
+        let len_cmp = left_data.len().cmp(&right_data.len());
+        let data_cmp = left_data.cmp(&right_data);
+        let reverse_cmp = right.cmp_canonical(&left);
+        let equal_cmp = left.cmp_canonical(&left);
+
+        assert_eq!(
+            value_cmp,
+            Ordering::Less,
+            "{:?} (encoded: {}) < {:?} (encoded: {})",
+            left,
+            hex::encode(&left_data),
+            right,
+            hex::encode(&right_data)
+        );
+        if len_cmp != Ordering::Equal {
+            assert_eq!(
+                len_cmp,
+                Ordering::Less,
+                "{:?}={} < {:?}={} by len",
+                left,
+                hex::encode(&left_data),
+                right,
+                hex::encode(&right_data)
+            );
+        } else {
+            assert_eq!(
+                data_cmp,
+                Ordering::Less,
+                "{:?}={} < {:?}={} by data",
+                left,
+                hex::encode(&left_data),
+                right,
+                hex::encode(&right_data)
+            );
+        }
+        assert_eq!(reverse_cmp, Ordering::Greater, "{:?} > {:?}", right, left);
+        assert_eq!(equal_cmp, Ordering::Equal, "{:?} = {:?}", left, left);
+    }
+}
+
+#[test]
 fn test_label_decode_fail() {
-    let tests = vec![
+    let tests = [
         ("43010203", "expected int/tstr"),
         ("", "decode CBOR failure: Io(EndOfFile"),
         ("1e", "decode CBOR failure: Syntax"),
@@ -182,7 +248,7 @@ fn test_registered_label_sort() {
 
 #[test]
 fn test_registered_label_decode_fail() {
-    let tests = vec![
+    let tests = [
         ("43010203", "expected int/tstr"),
         ("", "decode CBOR failure: Io(EndOfFile"),
         ("09", "expected recognized IANA value"),
@@ -292,7 +358,7 @@ fn test_registered_label_with_private_sort() {
 
 #[test]
 fn test_registered_label_with_private_decode_fail() {
-    let tests = vec![
+    let tests = [
         ("43010203", "expected int/tstr"),
         ("", "decode CBOR failure: Io(EndOfFile"),
         ("09", "expected value in IANA or private use range"),
@@ -325,7 +391,7 @@ const CBOR_INT_OUT_OF_RANGE_HEX: &str = "1b8000000000000000";
 
 #[test]
 fn test_large_label_decode() {
-    let tests = vec![(CBOR_NINT_MIN_HEX, i64::MIN), (CBOR_INT_MAX_HEX, i64::MAX)];
+    let tests = [(CBOR_NINT_MIN_HEX, i64::MIN), (CBOR_INT_MAX_HEX, i64::MAX)];
     for (label_data, want) in tests.iter() {
         let data = hex::decode(label_data).unwrap();
         let got = Label::from_slice(&data).unwrap();
@@ -335,7 +401,7 @@ fn test_large_label_decode() {
 
 #[test]
 fn test_large_label_decode_fail() {
-    let tests = vec![
+    let tests = [
         (CBOR_NINT_OUT_OF_RANGE_HEX, "out of range integer value"),
         (CBOR_INT_OUT_OF_RANGE_HEX, "out of range integer value"),
     ];
@@ -348,7 +414,7 @@ fn test_large_label_decode_fail() {
 
 #[test]
 fn test_large_registered_label_decode_fail() {
-    let tests = vec![
+    let tests = [
         (CBOR_NINT_OUT_OF_RANGE_HEX, "out of range integer value"),
         (CBOR_INT_OUT_OF_RANGE_HEX, "out of range integer value"),
     ];
@@ -361,7 +427,7 @@ fn test_large_registered_label_decode_fail() {
 
 #[test]
 fn test_large_registered_label_with_private_decode_fail() {
-    let tests = vec![
+    let tests = [
         (CBOR_NINT_OUT_OF_RANGE_HEX, "out of range integer value"),
         (CBOR_INT_OUT_OF_RANGE_HEX, "out of range integer value"),
     ];
