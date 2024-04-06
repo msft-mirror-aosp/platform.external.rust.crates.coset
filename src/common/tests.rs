@@ -35,7 +35,7 @@ fn test_error_convert() {
 
 #[test]
 fn test_label_encode() {
-    let tests = vec![
+    let tests = [
         (Label::Int(2), "02"),
         (Label::Int(-1), "20"),
         (Label::Text("abc".to_owned()), "63616263"),
@@ -68,6 +68,10 @@ fn test_label_sort() {
         (Label::Int(0x1234), Label::Int(0x1235)),
         (Label::Text("a".to_owned()), Label::Text("ab".to_owned())),
         (Label::Text("aa".to_owned()), Label::Text("ab".to_owned())),
+        (Label::Int(i64::MAX - 2), Label::Int(i64::MAX - 1)),
+        (Label::Int(i64::MAX - 1), Label::Int(i64::MAX)),
+        (Label::Int(i64::MIN + 2), Label::Int(i64::MIN + 1)),
+        (Label::Int(i64::MIN + 1), Label::Int(i64::MIN)),
     ];
     for (left, right) in pairs.into_iter() {
         let value_cmp = left.cmp(&right);
@@ -182,7 +186,7 @@ fn test_label_decode_fail() {
 
 #[test]
 fn test_registered_label_encode() {
-    let tests = vec![
+    let tests = [
         (RegisteredLabel::Assigned(iana::Algorithm::A192GCM), "02"),
         (RegisteredLabel::Assigned(iana::Algorithm::EdDSA), "27"),
         (RegisteredLabel::Text("abc".to_owned()), "63616263"),
@@ -276,7 +280,7 @@ impl WithPrivateRange for TestPrivateLabel {
 
 #[test]
 fn test_registered_label_with_private_encode() {
-    let tests = vec![
+    let tests = [
         (
             RegisteredLabelWithPrivate::Assigned(TestPrivateLabel::Something),
             "01",
@@ -435,5 +439,26 @@ fn test_large_registered_label_with_private_decode_fail() {
         let data = hex::decode(label_data).unwrap();
         let result = RegisteredLabelWithPrivate::<crate::iana::HeaderParameter>::from_slice(&data);
         expect_err(result, err_msg);
+    }
+}
+
+#[test]
+fn test_as_cbor_value() {
+    let cases = [
+        Value::Null,
+        Value::Bool(true),
+        Value::Bool(false),
+        Value::from(128),
+        Value::from(-1),
+        Value::Bytes(vec![1, 2]),
+        Value::Text("string".to_owned()),
+        Value::Array(vec![Value::from(0)]),
+        Value::Map(vec![]),
+        Value::Tag(1, Box::new(Value::from(0))),
+        Value::Float(1.054571817),
+    ];
+    for val in cases {
+        assert_eq!(val, Value::from_cbor_value(val.clone()).unwrap());
+        assert_eq!(val, val.clone().to_cbor_value().unwrap());
     }
 }
