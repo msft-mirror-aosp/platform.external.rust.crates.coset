@@ -90,7 +90,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [1.56.0, 1.57.0]
+        rust: [1.58.0, 1.59.0]
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
@@ -128,7 +128,7 @@ jobs:
         with:
           toolchain: stable
           components: rustfmt, clippy
-      - run: cargo +stable clippy --all-features --all-targets
+      - run: cargo +stable clippy --all-features --all-targets -- -Dwarnings
       - run: git diff --exit-code
 
   doc:
@@ -171,14 +171,14 @@ jobs:
           fetch-depth: 0
       - uses: dtolnay/rust-toolchain@a3ac054b2e7d62f514aa1bd57e3508c522fe772d # 1.68.2
         with:
-          toolchain: nightly-2023-04-01
+          toolchain: nightly-2024-04-01
           components: rustfmt
       - uses: actions-rs/install@69ec87709ffb5b19a7b5ddbf610cb221498bb1eb # v0.1.2
         with:
           crate: cargo-tarpaulin
           version: 0.25.2
           use-tool-cache: true
-      - run: cargo +nightly-2023-04-01 tarpaulin --verbose --ignore-tests --all-features --timeout=600 --out Xml
+      - run: cargo +nightly-2024-04-01 tarpaulin --verbose --ignore-tests --all-features --timeout=600 --out Xml
       - name: Upload to codecov.io
         run: |
           bash <(curl -s https://codecov.io/bash)
