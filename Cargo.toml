@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "coset"
-version = "0.3.4"
+version = "0.3.7"
 authors = [
     "David Drysdale <drysdale@google.com>",
     "Paul Crowley <paulcrowley@google.com>",
@@ -28,7 +28,7 @@ license = "Apache-2.0"
 repository = "https://github.com/google/coset"
 
 [dependencies.ciborium]
-version = "^0.2.0"
+version = "^0.2.1"
 default-features = false
 
 [dependencies.ciborium-io]
