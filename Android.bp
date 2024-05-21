@@ -26,7 +26,7 @@ rust_test {
     crate_name: "coset",
     cargo_env_compat: true,
     cargo_pkg_version: "0.3.7",
-    srcs: ["src/lib.rs"],
+    crate_root: "src/lib.rs",
     test_suites: ["general-tests"],
     auto_gen_config: true,
     test_options: {
@@ -50,7 +50,7 @@ rust_library {
     crate_name: "coset",
     cargo_env_compat: true,
     cargo_pkg_version: "0.3.7",
-    srcs: ["src/lib.rs"],
+    crate_root: "src/lib.rs",
     edition: "2018",
     features: [
         "default",
@@ -73,7 +73,7 @@ rust_library_rlib {
     crate_name: "coset",
     cargo_env_compat: true,
     cargo_pkg_version: "0.3.7",
-    srcs: ["src/lib.rs"],
+    crate_root: "src/lib.rs",
     edition: "2018",
     rustlibs: [
         "libciborium_io_nostd",
