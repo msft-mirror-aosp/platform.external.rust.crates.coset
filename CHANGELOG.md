@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.3.7 - 2024-04-05
+
+- Bump MSRV to 1.58.
+- Update dependencies.
+- Fix bounds bug for label sorting.
+
 ## 0.3.6 - 2024-01-15
 
 - Helpers for ordering of fields in a `COSE_Key`:
