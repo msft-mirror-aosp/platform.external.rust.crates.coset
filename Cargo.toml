@@ -20,7 +20,7 @@ categories = ["cryptography"]
 license = "Apache-2.0"
 repository = "https://github.com/google/coset"
 [dependencies.ciborium]
-version = "^0.2.0"
+version = "^0.2.2"
 default-features = false
 
 [dependencies.ciborium-io]
